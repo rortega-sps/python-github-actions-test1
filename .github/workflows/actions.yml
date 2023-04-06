@@ -22,7 +22,7 @@ jobs:
         run: |
           ls -la
           python main.py
-          # Aquí Githb Actions reconoce ${{}} y sabe que debe remplazar el contenido
+          # Aquí Githb Actions reconoce ${{ '${{VAR}}' }} y sabe que debe remplazar el contenido
           # antes de pegar este script en la terminal de Python. Es como las plantillas
           # de Django. Como es un secreto en el log solo verás ****
           echo ${{ secrets.AWS_TOKEN }}
