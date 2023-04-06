@@ -8,6 +8,9 @@ on:
 
 jobs:
   build:
+    # Esta usando la ultima imagen de ubuntu, que en este momento corresponde a ubuntu-22.04
+    # Puedes ver la lista de programas ya preinstalados acá: https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+    # Puedes ver otras posibles imagenes a usar https://github.com/actions/runner-images
     runs-on: ubuntu-latest
 
     steps:
@@ -16,12 +19,37 @@ jobs:
       - name: Run a Python script
         env:
           AWS_TOKEN: ${{ secrets.AWS_TOKEN }}
-        run: python main.py
+        run: |
+          ls -la
+          python main.py
+          # Aquí Githb Actions reconoce ${{}} y sabe que debe remplazar el contenido
+          # antes de pegar este script en la terminal de Python. Es como las plantillas
+          # de Django. Como es un secreto en el log solo verás ****
+          echo ${{ secrets.AWS_TOKEN }}
+          # Aquí imprimes una de las variables de ambiente que Github coloca por defecto
+          # Puedes ver la lista completa acá: https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
+          echo $GITHUB_REF
       - name: Python inline
         env:
           SALUDO: Hola desde github Actions
+        # Aquí se le dica a Github ejecuta el comando python en la terminal y luego pega todo lo que viene
+        # en el paso anterior 'Run a Python script' no lo indicas pero eso es 
+        # porque por defecto usa bash para imagenes linux
         shell: python
         run: |
           import os
           print("Saludos")
+          # Aquí Python lee tal cual la variable de ambiente como lo hace en tu PC
+          # Es similar al script que ya creaste
           print(os.environ['SALUDO'])
+          # Aquí Python no obtiene la variable de ambiente sino que le llega un
+          # print normalito: print("Hola desde github Actions") como en el echo de "Run a Python script"
+          print("${{env.SALUDO}}")
+          # Hay más valores que Python puede remplazar antes de ejecutar el script puedes verlos acá
+          # https://docs.github.com/en/actions/learn-github-actions/contexts
+          print("${{github.ref}}")
+          # Esta es una variable que se configura a nivel del repositorio
+          # como el secreto que ya configuraste, es una funcionalidad nueva que está en Beta
+          # Antes solo se podían poner secretos.
+          # https://docs.github.com/en/actions/learn-github-actions/variables#defining-configuration-variables-for-multiple-workflows
+          print("${{vars.ejemplo}}")
