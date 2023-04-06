@@ -14,3 +14,11 @@ jobs:
         env:
           AWS_TOKEN: ${{ secrets.AWS_TOKEN }}
         run: python main.py
+      - name: Python inline
+        env:
+          SALUDO: Hola desde github Actions
+        shell: python
+        run: |
+          import os
+          print("Saludos")
+          print(os.environ['SALUDO'])
